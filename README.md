@@ -2,8 +2,8 @@
 
 ## Description
 
+This program allows a user to keep an updated list of employee data. Data included is information about an employee's department, salary, and manager can be stored and edited. 
  
-
 ## Table of Contents
 
 - [Installation](#installation)
@@ -13,12 +13,12 @@
 
 ## Installation
 
+Here is a video of the app being used: https://watch.screencastify.com/v/vO7sLkuMH6rTDF8SMKd4. It will require the use of "npm server.js" to activate prompts.
 
 
 ## Usage
 
-
-
+This could be used as a database to track an employees current name, department, salary, and manager. It can be stored and regularly updated. 
 
 
 ## Credits

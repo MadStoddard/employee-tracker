@@ -50,7 +50,6 @@ const addDepartments = () => {
         }
     ]).then((answers) => {
         db.query("INSERT INTO department (name) VALUES (?);", [answers.departmentName],(err, data) => {
-            console.table(data)
             mainPrompt();
         })
     })
@@ -69,13 +68,20 @@ const addRoles = () => {
             message: "What is the salary of the role?"
         },
         {
-            type: "input",
+            type: "list",
             name: "departmentName",
-            message: "Which department does the role belong to?", 
+            message: "Which department does the role belong to?",
+            choices: [
+                "Sales",
+                "Engineering",
+                "Finance",
+                "Legal",
+                "Human Resources",
+                "Technology"
+            ]
         }
     ]).then((answers) => {
-        db.query("INSERT INTO role (name, salary) VALUES (??);", [answers.roleName, answers.salary],(err, data) => {
-            console.table(data)
+        db.query("INSERT INTO role (name) VALUES (?);", [answers.roleName],(err, data) => {
             mainPrompt();
         })
     })
@@ -107,13 +113,53 @@ const addEmployees = () => {
     //   NEED TO ADD IN THE DEPARTMENT THE ROLE RELATES TO
     ]).then((answers) => {
         db.query("INSERT INTO employee (firstName, lastName, employeeRole, managerName) VALUES (????);", [answers.firstName, answers.lastName, answers.employeeRole, answers.managerName],(err, data) => {
-            console.table(data)
             mainPrompt();
         })
     })
 };
 
+// UPDATE employee SET role_id = ? WHERE id = ?;
+
 const updateEmpRole = () => {
+    db.query("SELECT * FROM employee;", (err, data) => {
+        const choices = data.map((employee) => {
+            const choice = {
+                name: employee.first_name + " " + employee.last_name,
+                value: employee.id
+            }
+            return choice
+        })
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "employeeId",
+                message: "Which employee's role do you want to update?",
+                choices: choices
+            }
+        ]).then((answers) => {
+            db.query("SELECT * FROM role;", (err, data) => {
+                const roleChoices = data.map((role) => {
+                    const roleId = {
+                        name: role.title,
+                        value: role.id
+                    }
+                    return roleId
+                })
+                inquirer.prompt({
+                    type: "list",
+                    name: "roleId",
+                    message: "What would you like to change their new role to?",
+                    choices: roleChoices
+                }).then((answers1) => {
+                    db.query("UPDATE employee SET role_id = ? WHERE id = ?;", [answers1.roleId, answers.employeeId], () => {
+                        console.log("Update successful!")
+                        mainPrompt();
+                    })
+                })
+            })
+        })
+    })
+    
 
 };
 
@@ -144,8 +190,10 @@ const mainPrompt = () => {
             addRoles();
         } else if (answers.userChoice == "Add Employee") {
             addEmployees();
-        } else if (answers.userChoice == "View Employee") {
+        } else if (answers.userChoice == "View All Employees") {
             viewEmployees();
+        } else if (answers.userChoice == "Update Employee Role") {
+            updateEmpRole();
         }
     })
 }
